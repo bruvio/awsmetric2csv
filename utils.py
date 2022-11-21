@@ -72,28 +72,22 @@ def get_metric(resource, id, period, days, metric='CPUUtilization'):
 
     # get metric statistics
     return cw.get_metric_statistics(
-        Namespace='AWS/%s' % resource.upper(),
+        Namespace=f'AWS/{resource.upper()}',
         MetricName=metric,
-        Dimensions=[{
-            'Name': dimension_name,
-            'Value': id
-        }],
+        Dimensions=[{'Name': dimension_name, 'Value': id}],
         StartTime=now - datetime.timedelta(days=days),
         EndTime=now,
         Period=period,
         Statistics=['Maximum'],
-        Unit='Percent'
+        Unit='Percent',
     )
 
 
 def process_metric(result):
     # get all datapoints and add to list
-    item_list = []
-    for datapoint in result['Datapoints']:
-        item_list.append(float(datapoint['Maximum']))
-
+    item_list = [float(datapoint['Maximum']) for datapoint in result['Datapoints']]
     # on empty datapoints, append zero to avoid zero-size array error
-    if len(item_list) == 0:
+    if not item_list:
         item_list.append(0)
 
     # return a numpy array

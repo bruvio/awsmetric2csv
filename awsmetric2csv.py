@@ -19,15 +19,17 @@ args = parser.parse_args()
 # check if resource parameter is valid
 allowed_resources = ['ec2', 'rds']
 if args.resource not in allowed_resources:
-    print('Invalid resource %s provided. Valid resources: %s' % (
-        args.resource, allowed_resources))
+    print(
+        f'Invalid resource {args.resource} provided. Valid resources: {allowed_resources}'
+    )
+
     exit(0)
 
 # extract parameters
 resource = args.resource
 period = int(args.period) if args.period else 3600
 days = int(args.days) if args.days else 7
-filename = args.filename if args.filename else 'output.csv'
+filename = args.filename or 'output.csv'
 
 # get all instances
 instances = utils.get_all_instances(resource)
@@ -57,4 +59,4 @@ with open(filename, 'w') as csvfile:
         # write metrics to csv
         utils.write_to_csv(resource, csvwriter, instance, item_list_arr)
 
-    print('CSV file %s created.' % filename)
+    print(f'CSV file {filename} created.')
